@@ -1,10 +1,10 @@
 # zipcodeisrael
 Find zipcode by address at israel
 
-//we need to accept the datd from Windows-1255 charset
+we need to accept the datd from Windows-1255 charset
 header('Content-Type: text/html; charset=Windows-1255');
 
-//init the class
+init the class
 $zipcode = new zipCode;
 
 Get zip code from address:
