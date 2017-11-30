@@ -1,11 +1,14 @@
 # zipcodeisrael
 Find zipcode by address at israel
 
+### Class init
 we need to accept the datd from Windows-1255 charset
 header('Content-Type: text/html; charset=Windows-1255');
 
 init the class
 $zipcode = new zipCode;
+
+### Methods
 
 Get zip code from address:
 $zipcode->GetZipCodeByAddress($city, $address, $home, $enter);
