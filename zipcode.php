@@ -22,42 +22,38 @@ class zipCode
 
   function DownloadString($MikudAction, $string)
   {
-      $string = urlencode($string);
       $full_url = $this->baseUrl . $MikudAction . $string;
+      $full_url = str_replace('+', '%20', $full_url);
       $result = $this->download_page($full_url);
       return $result;
   }
 
   function GetZipCodeByAddress($city, $street, $house, $entrance = null){
     $url_string = 'SearchZip?OpenAgent&';
-    $data = $this->DownloadString($url_string, "Location=".$city."&Street=".$street."&House=".$house."&Entrance=".$entrance);
+    $city = urlencode($city);
+    $street = urlencode($street);
+    $house = urlencode($house);
+    $entrance = urlencode($entrance);
+    $data = $this->DownloadString($url_string, "Location=".$city."&Street=".$street."&House=".$house);
     return $this->GetZipCode($data);
   }
 
   function CityAutoComplete($startsWith){
+    $startsWith = urlencode($startsWith);
     $url_string = 'CreateLocationsforAutoComplete?OpenAgent&';
     $data = $this->DownloadString($url_string, "StartsWith=".$startsWith);
-
     $data = str_replace(array( '(', ')' ), '', $data);
     $data = substr($data, 0, -2);
-
-    //$data = '['.$data.']';
-
-    echo $data;
-
     return $data;
   }
 
   function StreetAutoComplete($startsWith, $location){
     $url_string = 'CreateStreetsforAutoComplete?OpenAgent&';
+    $location = urlencode($location);
+    $startsWith = urlencode($startsWith);
     $data = $this->DownloadString($url_string, "StartsWith=".$startsWith."&Location=".$location);
-
     $data = str_replace(array( '(', ')' ), '', $data);
     $data = substr($data, 0, -2);
-
-    //$data = '['.$data.']';
-
-    echo $data;
     return $data;
   }
 
@@ -75,12 +71,6 @@ class zipCode
 
   function GetZipCode($data)
   {
-      //var match = Regex.Match($data, @"RES[0-9]*\d");
-      //var result = match.Value.Substring(4);
-
-      //preg_match('RES[0-9]*\d', $data, $match);
-      //$status = substr($match ,4);
-
       $data = strip_tags($data);
 
       function clean($string) {
@@ -90,52 +80,12 @@ class zipCode
       }
 
       $data = clean($data);
-
-      //$data = preg_replace("/[^a-zA-Z0-9]+/", "", $data);
+      $data = preg_replace("/[^a-zA-Z0-9]+/", "", $data);
       $result = substr($data ,-7);
-
-      preg_match('/RES[0-9]*/', $data, $match);
-      $match = $match[0];
-      $status = substr($match ,-2);
-
-
-      /*ZipCode zipCode = new ZipCode()
-      {
-          Status = true,
-          Value = result
-      };*/
-
-      if ($status == "11")
-      {
-          $result = false;
-          $massage = "לא נמצא מיקוד מתאים. במידה והוזנה כניסה, יש לנסות לחפש בלעדיה…";
-      }
-      else if ($status == "12" || $match == "RES2")
-      {
-          $result = false;
-          $massage = "לא נמצא מיקוד מתאים. יש לנסות שנית עם רחוב ו/או מספר בית…";
-      }
-      else if ($status == "13" || $match == "RES013")
-      {
-          $result = false;
-          $massage = "לא נמצא מיקוד מתאים עם העיר ו/או הרחוב שהוזנ/ה. יש לנסות שנית…";
-      }
-      else if ($match == "RES5")
-      {
-          $result = false;
-          $massage = "לא נמצא מיקוד";
-      }
-      else if ($status == "")
-      {
-          $result = false;
-          $massage = 'Error';
-      }
-
       if(!$result){
         echo 0;
       }
-
-      echo $result;
+      echo $result; 
       
   }
 }
